@@ -65,6 +65,7 @@ async function backupDatabase() {
 
       // Clean up local dump file
       fs.unlinkSync(dumpFile);
+      console.log('PostgreSQL backup completed successfully!');
     } catch (error) {
       console.error('Error during PostgreSQL backup:', error);
       throw error;
@@ -97,6 +98,7 @@ async function backupDatabase() {
 
       // Clean up local backup file
       fs.unlinkSync(backupFile);
+      console.log('SQLite backup completed successfully!');
     } catch (error) {
       console.error('Error during SQLite backup:', error);
       throw error;
