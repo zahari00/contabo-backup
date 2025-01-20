@@ -30,6 +30,7 @@ async function backupDatabase() {
 
   if (process.env.DB_TYPE === 'postgres') {
     const dumpFile = path.join(tmpDir, `backup-${timestamp}.sql`);
+    console.log('Creating backup file:', dumpFile);
 
     // Create PostgreSQL dump
     const pgDumpCommand = `PGPASSWORD="${process.env.DB_PASSWORD}" pg_dump -h ${process.env.DB_HOST} -p ${process.env.DB_PORT} -U ${process.env.DB_USER} -d ${process.env.DB_NAME} > ${dumpFile}`;
@@ -44,10 +45,13 @@ async function backupDatabase() {
 
       // Upload to S3
       const fileContent = fs.readFileSync(dumpFile);
+      const s3Key = `backups/postgres/${path.basename(dumpFile)}`;
+      console.log('Uploading to S3:', s3Key);
+      
       await s3Client.send(
         new PutObjectCommand({
           Bucket: process.env.CONTABO_BUCKET_NAME,
-          Key: `backups/postgres/${path.basename(dumpFile)}`,
+          Key: s3Key,
           Body: fileContent,
         }),
       );
@@ -66,16 +70,20 @@ async function backupDatabase() {
     try {
       const dbFile = process.env.DB_PATH;
       const backupFile = path.join(tmpDir, `backup-${timestamp}.sqlite`);
+      console.log('Creating backup file:', backupFile);
 
       // Copy SQLite file
       fs.copyFileSync(dbFile, backupFile);
 
       // Upload to S3
       const fileContent = fs.readFileSync(backupFile);
+      const s3Key = `backups/sqlite/${path.basename(backupFile)}`;
+      console.log('Uploading to S3:', s3Key);
+      
       await s3Client.send(
         new PutObjectCommand({
           Bucket: process.env.CONTABO_BUCKET_NAME,
-          Key: `backups/sqlite/${path.basename(backupFile)}`,
+          Key: s3Key,
           Body: fileContent,
         }),
       );
