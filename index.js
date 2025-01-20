@@ -2,7 +2,14 @@ const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
-require('dotenv').config();
+
+// Parse command line arguments to get env file path
+const args = process.argv.slice(2);
+const envFileIndex = args.indexOf('--env-file');
+const envFile = envFileIndex >= 0 ? args[envFileIndex + 1] : '.env';
+
+// Load environment variables from specified file
+require('dotenv').config({ path: envFile });
 
 async function backupDatabase() {
   const tmpDir = path.join(process.cwd(), '.tmp');
