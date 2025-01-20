@@ -19,7 +19,6 @@ async function backupDatabase() {
     },
     endpoint: `https://${process.env.CONTABO_BUCKET_REGION}.contabostorage.com`,
     forcePathStyle: true,
-    baseUrl: process.env.CONTABO_PUBLIC_URL,
     region: process.env.CONTABO_BUCKET_REGION,
     params: {
       ACL: process.env.AWS_ACL,
@@ -47,7 +46,7 @@ async function backupDatabase() {
       const fileContent = fs.readFileSync(dumpFile);
       await s3Client.send(
         new PutObjectCommand({
-          Bucket: process.env.AWS_BUCKET_NAME,
+          Bucket: process.env.CONTABO_BUCKET_NAME,
           Key: `backups/postgres/${path.basename(dumpFile)}`,
           Body: fileContent,
         }),
@@ -75,7 +74,7 @@ async function backupDatabase() {
       const fileContent = fs.readFileSync(backupFile);
       await s3Client.send(
         new PutObjectCommand({
-          Bucket: process.env.AWS_BUCKET_NAME,
+          Bucket: process.env.CONTABO_BUCKET_NAME,
           Key: `backups/sqlite/${path.basename(backupFile)}`,
           Body: fileContent,
         }),
