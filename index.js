@@ -87,14 +87,17 @@ async function backupDatabase() {
       const fileContent = fs.readFileSync(backupFile);
       const s3Key = `backups/sqlite/${path.basename(backupFile)}`;
       console.log('Uploading to S3:', s3Key);
+      console.log('file name', path.basename(backupFile));
       
-      await s3Client.send(
+      const res = await s3Client.send(
         new PutObjectCommand({
           Bucket: process.env.CONTABO_BUCKET_NAME,
           Key: s3Key,
           Body: fileContent,
         }),
       );
+      
+      console.log('res', res);
 
       // Clean up local backup file
       fs.unlinkSync(backupFile);
